@@ -15,7 +15,7 @@ class DateFormatFilter extends Filter {
   // {{ now | date format=format.Variable}}
   override def name = "date"
 
-  case class DateFormatNotSupportedException(formatString: String) extends FilterException
+  case class DateFormatNotSupportedException(formatString: String) extends FilterException(formatString)
 
   override def apply(value: String, parameters: Map[String, Any]): String =
     parameters.get("format") match {
@@ -43,12 +43,14 @@ class DateFormatFilter extends Filter {
       """\d{9,10}""" -> "EPOCH",
       // 981173106987
       """\d{12,13}""" -> "EPOCH_MILLI",
-      // 2001-02-03
-      """\d{4}-\d\d-\d\d""" -> "yyyy-MM-dd",
-      // 2001-02-03 04:05:06
-      """\d{4}-\d\d-\d\d \d\d:\d\d:\d\d""" -> "yyyy-MM-dd HH:mm:ss",
       // 20010203
       """\d{8}""" -> "yyyyMMdd",
+     // 2001-02-03 04:05:06
+      """\d{4}-\d\d-\d\d \d\d:\d\d:\d\d""" -> "yyyy-MM-dd HH:mm:ss",
+      // 2001-02-03 04:05:06+01:00
+      """\d{4}-\d\d-\d\d \d\d:\d\d:\d\d[+\-]?\d\d:?\d\d""" -> "yyyy-MM-dd HH:mm:ssZ",
+       // 2001-02-03
+      """\d{4}-\d\d-\d\d""" -> "yyyy-MM-dd",
       // 2001-02-03T04:05:06
       """\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d""" -> "ISO_LOCAL_DATE_TIME",
       // 2001-02-03T04:05:06+01:00'
